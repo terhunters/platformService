@@ -1,0 +1,91 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using WebApplication3.AsyncDataServices;
+using WebApplication3.Data;
+using WebApplication3.DTOs;
+using WebApplication3.Models;
+using WebApplication3.SyncDataServices.http;
+
+namespace WebApplication3.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PlatformsController : ControllerBase
+    {
+        private readonly ICommandDataClients _commandDataClient;
+        private readonly IMapper _mapper;
+        private readonly IMessageBusClient _messageBusClient;
+        private readonly IPlatformRepo _repository;
+
+        public PlatformsController(
+            IPlatformRepo repository,
+            IMapper mapper,
+            ICommandDataClients commandDataClients,
+            IMessageBusClient messageBusClient)
+        {
+            _mapper = mapper;
+            _repository = repository;
+            _commandDataClient = commandDataClients;
+            _messageBusClient = messageBusClient;
+        }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<PlatformReadDto>> GetPlatforms()
+        {
+            Console.WriteLine("Getting platforms");
+            return Ok(
+                _mapper.Map<IEnumerable<PlatformReadDto>>(
+                    _repository.GetAllPlatforms())
+            );
+        }
+
+        [HttpGet("{id}", Name = "GetPlatformById")]
+        public ActionResult<PlatformReadDto> GetPlatformById(int id)
+        {
+            Console.WriteLine("Getting platform by id");
+            var result = _repository.GetPlatformById(id);
+            if (result != null) return Ok(_mapper.Map<PlatformReadDto>(result));
+
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<PlatformReadDto>> CreatePlatform(PlatformCreateDto platform)
+        {
+            Console.WriteLine("Create platform");
+            var platformModel = _mapper.Map<Platform>(platform);
+            _repository.CreateNewPlatform(platformModel);
+            if (_repository.SaveChanges())
+            {
+                var resultDto = _mapper.Map<PlatformReadDto>(platformModel);
+
+                try
+                {
+                    await _commandDataClient.SendPlatformToCommand(resultDto);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"--> Could not send synchronously: {ex.Message}");
+                }
+
+                try
+                {
+                    var publishedDto = _mapper.Map<PlatformPublishedDto>(resultDto);
+                    publishedDto.Event = "Platform_Published";
+                    _messageBusClient.PublishNewPlatform(publishedDto);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"--> Could not send asynchronously: {ex.Message}");
+                }
+
+                return CreatedAtRoute(nameof(GetPlatformById), new { resultDto.Id }, resultDto);
+            }
+
+            return StatusCode(500);
+        }
+    }
+}
