@@ -54,8 +54,8 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build Docker image
-        run: |
-          docker build -t ghcr.io/terhunters/platformservice/platform-service:latest .
-          docker push ghcr.io/terhunters/platformservice/platform-service:latest
+        run: docker build . --tag ghcr.io/terhunters/platform-service:latest
+      - name: Push Docker image
+        run: docker push ghcr.io/terhunters/platform-service:latest
