@@ -1,6 +1,8 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using WebApplication3.AsyncDataServices;
 using WebApplication3.Data;
+using WebApplication3.SyncDataServices.Grpc;
 using WebApplication3.SyncDataServices.http;
 
 namespace WebApplication3
@@ -44,6 +47,8 @@ namespace WebApplication3
 
             services.AddHttpClient<ICommandDataClients, HttpCommandDataClients>();
             services.AddSingleton<IMessageBusClient, MessageBusClient>();
+            
+            services.AddGrpc();
 
             services.AddControllers();
 
@@ -75,7 +80,16 @@ namespace WebApplication3
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapGrpcService<GrpcPlatformService>();
+
+                endpoints.MapGet("/protos/platforms.proto", async context =>
+                {
+                    await context.Response.WriteAsync(File.ReadAllText("Protos/platforms.proto"));
+                });
+            });
 
             PrepDB.PrepPopulation(app, _env.IsProduction());
         }
