@@ -28,7 +28,7 @@ jobs:
       uses: actions/upload-artifact@v3.1.2
       with:
         name: build-output
-        path: \bin\Debug\net5.0\WebApplication3.dll
+        path: /home/runner/work/platformService/platformService/bin/Debug/net5.0/WebApplication3.dll
   test:
   
     runs-on: ubuntu-latest
