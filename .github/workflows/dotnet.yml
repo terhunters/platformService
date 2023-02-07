@@ -24,12 +24,21 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+    - name: Upload output file
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: build-output
+        path: \bin\Debug\net5.0\WebApplication3.dll
   test:
   
     runs-on: ubuntu-latest
     needs: build
   
     steps:
+      - name: Download a single artifact
+        uses: actions/download-artifact@v3.1.2
+        with:
+          name: build-output
       - name: Test
         run: dotnet test --no-build --verbosity normal
   
