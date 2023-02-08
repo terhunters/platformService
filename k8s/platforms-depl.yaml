@@ -14,9 +14,7 @@ spec:
     spec:
       containers:
         - name: platform-service
-          image: registry.gitlab.com/terhunter.1/mydockerimage:latest
-      imagePullSecrets:
-        - name: regcred
+          image: ghcr.io/terhunters/platform-service:latest
 ---
 apiVersion: v1
 kind: Service
