@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: platforms-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: platform-service
+  template:
+    metadata:
+      labels:
+        app: platform-service
+    spec:
+      containers:
+        - name: platform-service
+          image: ghcr.io/terhunters/platform-service:latest
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: platforms-clusterip-srv
+spec:
+  type: ClusterIP
+  selector: 
+    app: platform-service
+  ports:
+  - name: platform-service
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  - name: platformgrpc
+    protocol: TCP
+    port: 666
+    targetPort: 666
