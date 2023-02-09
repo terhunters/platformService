@@ -21,7 +21,7 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Clean
-      run: dotnet clean ./JM.Formox.MicroService.sln --configuration Debug && dotnet nuget locals all --clear
+      run: dotnet clean ./WebApplication3.sln --configuration Debug && dotnet nuget locals all --clear
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
