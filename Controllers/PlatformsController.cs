@@ -26,6 +26,7 @@ namespace WebApplication3.Controllers
             ICommandDataClients commandDataClients,
             IMessageBusClient messageBusClient)
         {
+            Console.WriteLine("constructor");
             _mapper = mapper;
             _repository = repository;
             _commandDataClient = commandDataClients;

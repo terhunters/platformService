@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -73,34 +74,15 @@ namespace WebApplication3
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApplication3 v1"));
             }
-            
-            Console.WriteLine("Get request");
 
-            app.UseRouting();
-            
             app.Use(async (context, next) =>
             {
-                // получаем конечную точку
-                Endpoint endpoint = context.GetEndpoint();
- 
-                if (endpoint != null)
-                {
-                    // получаем шаблон маршрута, который ассоциирован с конечной точкой
-                    var routePattern = (endpoint as Microsoft.AspNetCore.Routing.RouteEndpoint)?.RoutePattern?.RawText;
- 
-                    Console.WriteLine($"Endpoint Name: {endpoint.DisplayName}");
-                    Console.WriteLine($"Route Pattern: {routePattern}");
- 
-                    // если конечная точка определена, передаем обработку дальше
-                    await next();
-                }
-                else
-                {
-                    Console.WriteLine("Endpoint: null");
-                    // если конечная точка не определена, завершаем обработку
-                    await context.Response.WriteAsync("Endpoint is not defined");
-                }
+                Console.WriteLine($"Method: {context.Request.Method}");
+                Console.WriteLine($"Path: {context.Request.Path.Value}");
+                await next();
             });
+            
+            app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
