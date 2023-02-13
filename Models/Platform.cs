@@ -12,6 +12,6 @@ namespace WebApplication3.Models
         [Required]
         public string Publisher { get; set; }
         [Required]
-        public string License { get; set; }
+        public string Version { get; set; }
     }
 }

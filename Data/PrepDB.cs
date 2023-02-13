@@ -29,9 +29,9 @@ namespace WebApplication3.Data
                 Console.WriteLine("Seeding data...");
                 
                 context.Platforms.AddRange(
-                    new Platform(){Name = "Record1", Publisher = "Microsoft", License = "Free"},
-                    new Platform(){Name = "Record2", Publisher = "Microsoft", License = "Free"},
-                    new Platform(){Name = "Record3", Publisher = "Azure", License = "Free"}
+                    new Platform(){Name = "Record1", Publisher = "Microsoft", Version = "Free"},
+                    new Platform(){Name = "Record2", Publisher = "Microsoft", Version = "Free"},
+                    new Platform(){Name = "Record3", Publisher = "Azure", Version = "Free"}
                     );
 
                 context.SaveChanges();

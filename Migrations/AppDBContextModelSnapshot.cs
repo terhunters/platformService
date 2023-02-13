@@ -25,7 +25,7 @@ namespace WebApplication3.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("License")
+                    b.Property<string>("Version")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
