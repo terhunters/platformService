@@ -5,6 +5,9 @@ ENV PROTOBUF_PROTOC=/usr/bin/protoc
 ENV gRPC_PluginFullPath=/usr/bin/grpc_csharp_plugin
 RUN apk add protobuf protobuf-dev grpc
 
+RUN apk add --no-cache icu-libs
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
 COPY *.csproj ./
 RUN dotnet restore
 
