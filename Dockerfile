@@ -1,5 +1,9 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
+﻿FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build-env
 WORKDIR /app
+
+ENV PROTOBUF_PROTOC=/usr/bin/protoc
+ENV gRPC_PluginFullPath=/usr/bin/grpc_csharp_plugin
+RUN apk add protobuf protobuf-dev grpc
 
 COPY *.csproj ./
 RUN dotnet restore
@@ -7,7 +11,7 @@ RUN dotnet restore
 COPY . ./
 RUN dotnet publish --runtime alpine-x64 -c Release --self-contained true -o ./publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine
 WORKDIR /app
 COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "WebApplication3.dll"]
