@@ -25,25 +25,6 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Delete Old Artifacts
-      uses: actions/github-script@v6
-      id: artifact
-      with:
-        script: |
-          const res = await github.rest.actions.listArtifactsForRepo({
-            owner: github.repository_owner,
-            repo: context.repo.repo,
-          })
-
-          res.data.artifacts
-            .filter(({ name }) => name === 'package')
-            .forEach(({ id }) => {
-              github.rest.actions.deleteArtifact({
-                owner: github.repository_owner,
-                repo: context.repo.repo,
-                artifact_id: id,
-              })
-            })
     - name: Upload output file
       uses: actions/upload-artifact@v3.1.2
       with:
