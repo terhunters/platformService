@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
@@ -20,7 +21,7 @@ namespace WebApplication3.AsyncDataServices.SignalR
         
         public async Task GetAllPlatforms()
         {
-            await Clients.Caller.SendAsync("ReceivePlatforms", _mapper.Map<PlatformReadDto>(_repository.GetAllPlatforms()));
+            await Clients.Caller.SendAsync("ReceivePlatforms", _mapper.Map<IEnumerable<PlatformReadDto>>(_repository.GetAllPlatforms()));
         }
 
         public override async Task OnConnectedAsync()
