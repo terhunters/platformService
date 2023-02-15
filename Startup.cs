@@ -3,12 +3,14 @@ using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using WebApplication3.AsyncDataServices;
+using WebApplication3.AsyncDataServices.SignalR;
 using WebApplication3.Data;
 using WebApplication3.SyncDataServices.Grpc;
 using WebApplication3.SyncDataServices.http;
@@ -42,6 +44,8 @@ namespace WebApplication3
                 services.AddDbContext<AppDBContext>(opt =>
                     opt.UseSqlServer(Configuration.GetConnectionString("PlatformsConn")));
             }
+
+            services.AddSignalR();
 
             services.AddScoped<IPlatformRepo, PlatformRepo>();
 
@@ -87,6 +91,21 @@ namespace WebApplication3
             {
                 endpoints.MapControllers();
                 endpoints.MapGrpcService<GrpcPlatformService>();
+
+                endpoints.MapHub<ServerHub>("/serverHubWebSocket", options =>
+                {
+                    options.Transports = HttpTransportType.WebSockets;
+                });
+                
+                endpoints.MapHub<ServerHub>("/serverHubSSE", options =>
+                {
+                    options.Transports = HttpTransportType.ServerSentEvents;
+                });
+                
+                endpoints.MapHub<ServerHub>("/serverHubLongPooling", options =>
+                {
+                    options.Transports = HttpTransportType.LongPolling;
+                });
 
                 endpoints.MapGet("/protos/platforms.proto", async context =>
                 {
