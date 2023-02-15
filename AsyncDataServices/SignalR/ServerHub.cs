@@ -24,6 +24,11 @@ namespace WebApplication3.AsyncDataServices.SignalR
             await Clients.Caller.SendAsync("ReceivePlatforms", _mapper.Map<IEnumerable<PlatformReadDto>>(_repository.GetAllPlatforms()));
         }
 
+        public async Task SendNewPlatformToAll(PlatformReadDto platform)
+        {
+            await Clients.All.SendAsync("CreatedNewPlatform", platform);
+        }
+
         public override async Task OnConnectedAsync()
         {
             Console.WriteLine($"{Context.ConnectionId} connected to hub");

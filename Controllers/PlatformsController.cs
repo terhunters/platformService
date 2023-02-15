@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication3.AsyncDataServices;
+using WebApplication3.AsyncDataServices.SignalR;
 using WebApplication3.Data;
 using WebApplication3.DTOs;
 using WebApplication3.Models;
@@ -19,18 +20,21 @@ namespace WebApplication3.Controllers
         private readonly IMapper _mapper;
         private readonly IMessageBusClient _messageBusClient;
         private readonly IPlatformRepo _repository;
+        private readonly ServerHub _serverHub;
 
         public PlatformsController(
             IPlatformRepo repository,
             IMapper mapper,
             ICommandDataClients commandDataClients,
-            IMessageBusClient messageBusClient)
+            IMessageBusClient messageBusClient,
+            ServerHub serverHub)
         {
             Console.WriteLine("constructor");
             _mapper = mapper;
             _repository = repository;
             _commandDataClient = commandDataClients;
             _messageBusClient = messageBusClient;
+            _serverHub = serverHub;
         }
 
         [HttpGet]
@@ -81,6 +85,16 @@ namespace WebApplication3.Controllers
                 catch (Exception ex)
                 {
                     Console.WriteLine($"--> Could not send asynchronously: {ex.Message}");
+                }
+                
+                try
+                {
+                    Console.WriteLine("SignalR send to all clients ");
+                    await _serverHub.SendNewPlatformToAll(resultDto);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"--> Could not send asynchronously SignalR: {ex.Message}");
                 }
 
                 return CreatedAtRoute(nameof(GetPlatformById), new { resultDto.Id }, resultDto);
