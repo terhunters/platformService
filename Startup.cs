@@ -96,16 +96,16 @@ namespace WebApplication3
                 {
                     options.Transports = HttpTransportType.WebSockets;
                 });
-                //
-                // endpoints.MapHub<ServerHub>("/serverHubSSE", options =>
-                // {
-                //     options.Transports = HttpTransportType.ServerSentEvents;
-                // });
-                //
-                // endpoints.MapHub<ServerHub>("/serverHubLongPooling", options =>
-                // {
-                //     options.Transports = HttpTransportType.LongPolling;
-                // });
+                
+                endpoints.MapHub<ServerHub>("/serverHubSSE", options =>
+                {
+                    options.Transports = HttpTransportType.ServerSentEvents;
+                });
+                
+                endpoints.MapHub<ServerHub>("/serverHubLongPooling", options =>
+                {
+                    options.Transports = HttpTransportType.LongPolling;
+                });
 
                 endpoints.MapGet("/protos/platforms.proto", async context =>
                 {
