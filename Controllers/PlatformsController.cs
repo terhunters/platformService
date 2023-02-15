@@ -92,7 +92,7 @@ namespace WebApplication3.Controllers
                 {
                     Console.WriteLine("SignalR send to all clients ");
                     Console.WriteLine($"{_serverHubContext.Clients.All.ToString()}");
-                    await _serverHubContext.Clients.All.SendAsync("CreatedNewPlatform", platform).ConfigureAwait(false);
+                    await _serverHubContext.Clients.All.SendAsync("Notify", "some text");
                     Console.WriteLine("Finish sending");
                 }
                 catch (Exception ex)
