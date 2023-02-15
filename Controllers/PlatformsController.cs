@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using WebApplication3.AsyncDataServices;
 using WebApplication3.AsyncDataServices.SignalR;
 using WebApplication3.Data;
@@ -20,21 +21,21 @@ namespace WebApplication3.Controllers
         private readonly IMapper _mapper;
         private readonly IMessageBusClient _messageBusClient;
         private readonly IPlatformRepo _repository;
-        private readonly ServerHub _serverHub;
+        private readonly IHubContext<ServerHub> _serverHubContext;
 
         public PlatformsController(
             IPlatformRepo repository,
             IMapper mapper,
             ICommandDataClients commandDataClients,
             IMessageBusClient messageBusClient,
-            ServerHub serverHub)
+            IHubContext<ServerHub> serverHubContext)
         {
             Console.WriteLine("constructor");
             _mapper = mapper;
             _repository = repository;
             _commandDataClient = commandDataClients;
             _messageBusClient = messageBusClient;
-            _serverHub = serverHub;
+            _serverHubContext = serverHubContext;
         }
 
         [HttpGet]
@@ -90,7 +91,7 @@ namespace WebApplication3.Controllers
                 try
                 {
                     Console.WriteLine("SignalR send to all clients ");
-                    await _serverHub.SendNewPlatformToAll(resultDto);
+                    await _serverHubContext.Clients.All.SendAsync("CreatedNewPlatform", platform);
                 }
                 catch (Exception ex)
                 {
